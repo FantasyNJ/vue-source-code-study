@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<script>
+    //    let app1 = new Observer({
+    //        name: 'youngwind',
+    //        age: 25
+    //    });
+    //
+    //    let app2 = new Observer({
+    //        university: 'bupt',
+    //        major: 'computer'
+    //    });
+    //
+    //    // 要实现的结果如下：
+    //    app1.data.name // 你访问了 name
+    //    app.data.age = 100;  // 你设置了 age，新的值为100
+    //    app2.data.university // 你访问了 university
+    //    app2.data.major = 'science'  // 你设置了 major，新的值为 science
+
+    function Observer( obj ) {
+        this.data = obj;
+        this.walk( this.data );
+    }
+
+    let p = Observer.prototype;
+
+    p.walk = function( data ){
+        let _this = this;
+
+        for(let attr in data){
+            if( data.hasOwnProperty(attr) ){
+
+                let val = data[attr];
+                if( typeof val === 'object' ){
+                    _this.walk( val );
+                }
+                _this.convert( data, attr, val );
+            }
+        }
+    }
+
+    p.convert = function( data, key, val ){
+        let _this = this;
+        Object.defineProperty(data, key, {
+            enumerable: true,
+            configurable: true,
+            get: function (){
+                console.log('你访问了' + key);
+                return val;
+            },
+            set: function (newVal){
+                console.log('你设置了' + key);
+                console.log('新的' + key + ' = ' + newVal);
+                if (newVal === val) return;
+                val = newVal;
+                if( typeof newVal === 'object'){  // 判断是不是对象
+                    _this.walk( data );
+                }
+            }
+        });
+    }
+
+    let app = new Observer({
+        a: 1,
+        b: {
+            c: 2,
+            d: 3,
+        }
+    });
+
+</script>
+</body>
+</html>

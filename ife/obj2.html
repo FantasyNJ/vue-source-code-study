@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    //-----------------测试目标属性是否能被删除------------------------
+    var obj = {}
+    //第一种情况：configurable设置为false，不能被删除。
+    Object.defineProperty(obj,"newKey",{
+        value:"hello",
+        writable:false,
+        enumerable:false,
+        configurable:false
+    });
+    //删除属性
+    delete obj.newKey;
+    console.log( obj.newKey ); //hello
+
+    //第二种情况：configurable设置为true，可以被删除。
+    Object.defineProperty(obj,"newKey",{
+        value:"hello",
+        writable:false,
+        enumerable:false,
+        configurable:true
+    });
+    //删除属性
+    delete obj.newKey;
+    console.log( obj.newKey ); //undefined
+
+    //-----------------测试是否可以再次修改特性------------------------
+    var obj = {}
+    //第一种情况：configurable设置为false，不能再次修改特性。
+    Object.defineProperty(obj,"newKey",{
+        value:"hello",
+        writable:false,
+        enumerable:false,
+        configurable:false
+    });
+
+    //重新修改特性
+    Object.defineProperty(obj,"newKey",{
+        value:"hello",
+        writable:true,
+        enumerable:true,
+        configurable:true
+    });
+    console.log( obj.newKey ); //报错：Uncaught TypeError: Cannot redefine property: newKey
+
+    //第二种情况：configurable设置为true，可以再次修改特性。
+    Object.defineProperty(obj,"newKey",{
+        value:"hello",
+        writable:false,
+        enumerable:false,
+        configurable:true
+    });
+
+    //重新修改特性
+    Object.defineProperty(obj,"newKey",{
+        value:"hello",
+        writable:true,
+        enumerable:true,
+        configurable:true
+    });
+    console.log( obj.newKey ); //hello
+</script>
+</body>
+</html>

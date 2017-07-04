@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    "use strict";
+    try{
+        var o = {};
+        Object.defineProperty( o, "attr", {
+            value: "这是利用defindProperty添加的新属性",
+            writable: false,
+            enumerable: true,
+            configurable: true
+        });
+
+        (function(){
+            var name = "司徒正美";
+            //读写器
+            Object.defineProperty( o, "name", {
+                get: function(){ return name; },
+                set: function(value){ name = value+"!"; }
+            });
+        })();
+
+        alert( o.attr )
+        // 这是利用defindProperty添加的新属性
+
+        alert( o.name );  // 司徒正美
+
+        o.name = "ruby louvre";
+        alert( o.name );  // ruby louvre
+
+        alert( Object.keys(o))//attr
+        try{
+            o.attr = "试图重写该属性";
+        }catch(ee){
+            alert("与writable: false冲突");
+        }
+        Object.defineProperty( o, "attr", {
+            writable: true,
+            configurable: false
+        });
+
+        o.attr = "再试尝试重写该属性";
+        alert( o.attr );
+
+        alert(delete o.attr); //false 与writable: false冲突
+
+
+    }catch(e){
+        alert("你的游览器不支持Object.defineProperty ")
+    }
+
+</script>
+</body>
+</html>

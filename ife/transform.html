@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #target{
+            width: 100px;
+            height: 100px;
+            background-color: red;
+        }
+    </style>
+</head>
+<body>
+<div id="target"></div>
+
+<script>
+
+//    //加入有一个目标节点， 我们想设置其位移时是这样的
+//    var targetDom = document.getElementById('target');
+//    var transformText = 'translateX(' + 10 + 'px)';
+//    targetDom.style.webkitTransform = transformText;
+//    targetDom.style.transform = transformText;
+
+var dom = document.getElementById('target');
+Object.defineProperty(dom, 'translateX', {
+    set: function (value) {
+        var transformText = 'translateX(' + value + 'px)';
+        dom.style.webkitTransform = transformText;
+        dom.style.transform = transformText;
+    }
+})
+//这样再后面调用的时候, 十分简单
+    dom.translateX = 10;
+
+</script>
+</body>
+</html>

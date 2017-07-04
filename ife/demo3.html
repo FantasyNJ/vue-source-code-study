@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+
+    // 事件模型
+    function Event(){
+        this.event = {};
+    }
+
+    Event.prototype.on = function(key, cb){
+        if( this.event[key] ){
+            this.event[key].push(cb);
+        }else{
+            this.event[key] = [cb];
+        }
+    }
+
+    Event.prototype.emit = function(key){
+        if(this.event[key] && this.event.hasOwnProperty(key)){
+            this.event[key].forEach(function (item) {
+                item()
+            })
+        }
+    }
+
+    // vue对象
+    function Vue( data ){
+        this.data = data;
+        this.walk( data );
+        this.eventObj = new Event();
+    }
+
+    var pt = Vue.prototype;
+
+    pt.walk = function( data ){
+        var _this = this;
+        for(var attr in data){
+            var val = data[attr];
+            if(typeof val === 'object'){
+                _this.walk(val);
+            }
+            _this.convert(data, attr, val);
+        }
+    };
+
+    pt.convert = function(data, attr, val){
+        var _this = this;
+        Object.defineProperty(data, attr, {
+            enumerable: true,  // 当且仅当该属性的 enumerable 为 true 时，该属性才能够出现在对象的枚举属性中。默认为 false。
+            configurable: true, // 当且仅当该属性的 configurable 为 true 时，该属性描述符才能够被改变，也能够被删除。默认为 false。
+            get(){
+                return val;
+            },
+            set(newVal){
+                _this.eventObj.emit(attr);
+                if(newVal !== val){
+                    if(typeof newVal === 'object'){
+                        new Vue(newVal);
+                    }
+                    val = newVal;
+                }
+            }
+        })
+    }
+
+    pt.$watch = function(key, cb){
+        this.eventObj.on(key, cb);
+    }
+
+    let app = new Vue({
+        name: 'youngwind',
+        age: 25,
+        haha: {
+            a: 1,
+            b: 2
+        }
+    });
+
+    app.$watch('age', function(){
+        console.log('age改啦，哈哈哈，watch成功！！！(＾－＾)V');
+    });
+
+    app.$watch('a', function(){
+        console.log('a改啦，哈哈哈，watch成功！！！(＾－＾)V');
+    });
+</script>
+</body>
+</html>

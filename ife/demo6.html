@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+
+    // 事件模型
+    function Event(){
+        this.event = {};
+    }
+
+    Event.prototype.on = function(key, cb){
+        if( this.event[key] ){
+            this.event[key].push(cb);
+        }else{
+            this.event[key] = [cb];
+        }
+    }
+
+    Event.prototype.emit = function(key){
+        if(this.event[key] && this.event.hasOwnProperty(key)){
+            this.event[key].forEach(function (item) {
+                item()
+            })
+        }
+    }
+
+    // vue对象
+    function Vue( data ){
+        this.data = data;
+        this.walk( data );
+        this.eventObj = new Event();
+        this.$attr = '';
+    }
+
+    var pt = Vue.prototype;
+
+    pt.walk = function( data, parent ){
+        var _this = this;
+        parent = parent?parent:'';
+        for(var attr in data){
+            var path = parent === ''? attr : parent + '.' +attr;
+            console.log(path);
+            var val = data[attr];
+            if(typeof val === 'object'){
+                _this.walk(val, path);
+            }
+            _this.convert(data, attr, val, path);
+        }
+    };
+
+    pt.convert = function(data, attr, val, path){
+        var _this = this;
+
+        Object.defineProperty(data, attr, {
+            enumerable: true,  // 当且仅当该属性的 enumerable 为 true 时，该属性才能够出现在对象的枚举属性中。默认为 false。
+            configurable: true, // 当且仅当该属性的 configurable 为 true 时，该属性描述符才能够被改变，也能够被删除。默认为 false。
+            get(){
+                console.log('get', _this.$attr);
+                return val;
+            },
+            set(newVal){
+                console.log('set')
+                _this.eventObj.emit(path);
+                if(newVal !== val){
+                    if(typeof newVal === 'object'){
+                        new Vue(newVal);
+                    }
+                    val = newVal;
+                }
+            }
+        })
+    }
+
+    pt.$watch = function(key, cb){
+        this.eventObj.on(key, cb);
+    }
+
+    let app = new Vue({
+        name: 'youngwind',
+        haha: {
+            a: 1,
+            b: {
+                c: 2,
+                d: {
+                    d: 3,
+                    e: 4
+                }
+            }
+        }
+    });
+
+    app.$watch('age', function(){
+        console.log('age改啦，哈哈哈，watch成功！！！(＾－＾)V');
+    });
+
+    app.$watch('age', function(){
+        console.log('age改啦(＾－＾)V');
+    });
+
+    app.$watch('a', function(){
+        console.log('a改啦，哈哈哈，watch成功！！！(＾－＾)V');
+    });
+
+    app.$watch('haha.b.d.e', function(){
+        console.log('haha.b.d.e改啦，哈哈哈，watch成功！！！(＾－＾)V');
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!--
+let app1 = new Observer({
+name: 'youngwind',
+age: 25
+});
+
+let app2 = new Observer({
+university: 'bupt',
+major: 'computer'
+});
+
+// 要实现的结果如下：
+app1.data.name // 你访问了 name
+app.data.age = 100;  // 你设置了 age，新的值为100
+app2.data.university // 你访问了 university
+app2.data.major = 'science'  // 你设置了 major，新的值为 science
+-->
+
+<!--
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+function Observer( obj ){
+    this.data = obj;
+    this.walk( obj );
+}
+
+Observer.prototype.walk = function( obj ){
+    for(let key in obj){
+        if( obj.hasOwnProperty(key) ){
+            let val = obj[key];
+            if( typeof val === 'object' ){
+                this.walk( val );
+            }else{
+                this.convert( obj, key, val );
+            }
+        }
+    }
+}
+
+Observer.prototype.convert = function( obj, key, val ){
+    Object.defineProperty(obj, key, {
+        enumerable: true,
+        configurable: true,
+        get(){
+            console.log('你访问了' + key);
+            return val;
+        },
+        set(newVal){
+            if(newVal !== val){
+                console.log('你设置了' + key);
+                console.log('新的' + key + ' = ' + newVal);
+                val = newVal;
+            }else{
+                console.log('值并没有修改');
+            }
+        }
+    })
+}
+
+let app1 = new Observer({
+    name: 'youngwind',
+    age: 25,
+    haha: {
+        a: 1,
+        b: 2
+    }
+});
+
+let app2 = new Observer({
+    university: 'bupt',
+    major: 'computer'
+});
+
+app1.data.name // 你访问了 name
+app1.data.age = 100;  // 你设置了 age，新的值为100
+app2.data.university // 你访问了 university
+app2.data.major = 'science'  // 你设置了 major，新的值为 science
+</script>
+</body>
+</html>
+-->
+
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    function Observer( data ){
+        this.data = data;
+        this.walk( data );
+    }
+
+    Observer.prototype.walk = function( data ){
+        for( let key in data ){
+            if( data.hasOwnProperty(key) ){
+                if( typeof data[key] === 'object'){
+                    this.walk( data[key] );
+                }else{
+                    this.convert();
+                }
+            }
+        }
+    }
+
+    Observer.prototype.convert = function(){
+
+    }
+
+    let app1 = new Observer({
+        name: 'youngwind',
+        age: 25,
+        haha: {
+            a: 1,
+            b: 2
+        }
+    });
+
+    let app2 = new Observer({
+        university: 'bupt',
+        major: 'computer'
+    });
+</script>
+</body>
+</html>

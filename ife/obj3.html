@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    var obj = {};
+    var initValue = 'hello';
+    Object.defineProperty(obj,"newKey",{
+        get:function (){
+            console.log('get')
+            //当获取值的时候触发的函数
+            return initValue;
+        },
+        set:function (value){
+            console.log('set')
+            //当设置值的时候触发的函数,设置的新值通过参数value拿到
+            initValue = value;
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="app">
+    <div>
+        11111111111111111111
+    </div>
+</div>
+
+<script src="vue.js"></script>
+<script>
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            name: {
+                firstName: 'shaofeng',
+                lastName: 'liang',
+                haha: {
+                    a: 1,
+                    b: 2
+                }
+            },
+            age: 25,
+        },
+        watch:{
+            name: {
+                handler: function (val, oldVal) {
+                    console.log(val, oldVal);
+                    console.log('haha可能改变了');
+                },
+                deep: true,
+            },
+            'name.haha.a'(val, oldVal){
+                console.log('name.haha.a改变了');
+            }
+        }
+    })
+</script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    var obj = {}
+    //第一种情况：enumerable设置为false，不能被枚举。
+    Object.defineProperty(obj,"newKey",{
+        value:"hello",
+        writable:false,
+        enumerable:false
+    });
+
+    //枚举对象的属性
+    for( var attr in obj ){
+        console.log( attr );
+    }
+    //第二种情况：enumerable设置为true，可以被枚举。
+    Object.defineProperty(obj,"xixi",{
+        value:"lala",
+        writable:false,
+        enumerable:true
+    });
+
+    //枚举对象的属性
+    for( var attr in obj ){
+        console.log( attr );  //xixi
+    }
+</script>
+</body>
+</html>
