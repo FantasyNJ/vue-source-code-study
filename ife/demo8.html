@@ -28,24 +28,33 @@
         }
     }
 
+    var eventObj = new Event();
+
     // vue对象
     function Vue( data ){
         this.data = data;
-        this.walk( data );
-        this.eventObj = new Event();
+        this.eventObj = eventObj;
         this.$parent = '';
+
+        this.walk( data );
+
     }
 
     var pt = Vue.prototype;
 
     pt.walk = function( data ){
         var _this = this;
+        console.log(_this.$parent)
         for(var attr in data){
             var val = data[attr];
             if(typeof val === 'object'){
                 var obj = new Vue(val);
-                obj.$parent = attr;
-                console.log(obj, obj.$parent);
+                if(_this.$parent === ''){
+                    obj.$parent = attr;
+                }else{
+                    obj.$parent = _this.$parent + '.' + attr;
+                }
+                console.log(obj.$parent)
             }
             _this.convert(data, attr, val);
         }
@@ -71,11 +80,17 @@
                 // 触发自己的事件
                 _this.eventObj.emit(path);
                 // 冒泡到顶层
+                _this.eventObj.emit(_this.$parent);
 
 
                 if(newVal !== val){
                     if(typeof newVal === 'object'){
-                        _this.walk(val, path);
+                        var obj = new Vue(val);
+                        if(_this.$parent === ''){
+                            obj.$parent = attr;
+                        }else{
+                            obj.$parent = _this.$parent + '.' + attr;
+                        }
                     }
                     val = newVal;
                 }
@@ -92,7 +107,16 @@
             firstName: 'shaofeng',
             lastName: 'liang'
         },
-        age: 25
+        age: 25,
+        haha: {
+            a: 1,
+            b: {
+                c: 3,
+                d: {
+                    e: 5
+                }
+            }
+        }
     });
 
     app.$watch('name', function (newName) {
