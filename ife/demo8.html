@@ -44,17 +44,13 @@
 
     pt.walk = function( data ){
         var _this = this;
-        console.log(_this.$parent)
         for(var attr in data){
             var val = data[attr];
+            var path = _this.$parent === ''? attr : _this.$parent + '.' + attr;
             if(typeof val === 'object'){
                 var obj = new Vue(val);
-                if(_this.$parent === ''){
-                    obj.$parent = attr;
-                }else{
-                    obj.$parent = _this.$parent + '.' + attr;
-                }
-                console.log(obj.$parent)
+                obj.$parent = _this;
+                console.log(attr, obj.$parent);
             }
             _this.convert(data, attr, val);
         }
@@ -86,6 +82,7 @@
                 if(newVal !== val){
                     if(typeof newVal === 'object'){
                         var obj = new Vue(val);
+//                        console.log(_this.$parent);
                         if(_this.$parent === ''){
                             obj.$parent = attr;
                         }else{
@@ -105,28 +102,31 @@
     let app = new Vue({
         name: {
             firstName: 'shaofeng',
-            lastName: 'liang'
-        },
-        age: 25,
-        haha: {
-            a: 1,
-            b: {
-                c: 3,
-                d: {
-                    e: 5
-                }
+            lastName: 'liang',
+            haha: {
+                a: 1,
             }
-        }
+        },
+//        age: 25,
+//        haha: {
+//            a: 1,
+//            b: {
+//                c: 3,
+//                d: {
+//                    e: 5
+//                }
+//            }
+//        }
     });
 
-    app.$watch('name', function (newName) {
-        console.log('我的姓名发生了变化，可能是姓氏变了，也可能是名字变了。')
-    });
-
-    app.data.name.firstName = 'hahaha';
-    // 输出：我的姓名发生了变化，可能是姓氏变了，也可能是名字变了。
-    app.data.name.lastName = 'blablabla';
-    // 输出：我的姓名发生了变化，可能是姓氏变了，也可能是名字变了。
+//    app.$watch('name', function (newName) {
+//        console.log('我的姓名发生了变化，可能是姓氏变了，也可能是名字变了。')
+//    });
+//
+//    app.data.name.firstName = 'hahaha';
+//    // 输出：我的姓名发生了变化，可能是姓氏变了，也可能是名字变了。
+//    app.data.name.lastName = 'blablabla';
+//    // 输出：我的姓名发生了变化，可能是姓氏变了，也可能是名字变了。
 </script>
 </body>
 </html>
