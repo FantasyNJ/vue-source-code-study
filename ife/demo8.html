@@ -105,6 +105,9 @@
             lastName: 'liang',
             haha: {
                 a: 1,
+                b: {
+                    c: 3
+                }
             }
         },
 //        age: 25,
@@ -118,6 +121,10 @@
 //            }
 //        }
     });
+
+    app.$watch('name.haha.a', function(){
+        console.log('watch成功！');
+    })
 
 //    app.$watch('name', function (newName) {
 //        console.log('我的姓名发生了变化，可能是姓氏变了，也可能是名字变了。')
