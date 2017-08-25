@@ -7,11 +7,63 @@
 <body>
 
 <div id="app">
-    <p>姓名：{{user.name}}</p>
-    <p>年龄：{{user.age}}</p>
+    {{user.name}}
+    <p>姓名：{{ user.name }}</p>
+    <p>年龄：{{ user.age }}</p>
 </div>
 
 <script>
+
+    function Render(node){
+        this.node = node;
+        this.reg = /{{(.*)}}/g;
+
+    }
+
+    Render.prototype.cloneDOM = function(){
+        this.template = this.node.cloneNode(true);
+    }
+
+    Render.prototype.renderData = function(vm){
+        var cloneTemplate = this.template.cloneNode(true);
+        var childrens = cloneTemplate.childNodes;
+        var frag = document.createDocumentFragment();
+        console.log(childrens.length)
+
+        var i = 0;
+        while( childrens.length > 0 ){
+            console.log(childrens, childrens.length)
+            var item = childrens[i];
+
+            if( item.nodeType === 1 ){  // elem DOM
+
+                console.log(item)
+
+            }else if( item.nodeType === 3 ){  // text DOM
+                var text = item.nodeValue;
+                text = text.replace(/{{(.*)}}/g, function($0, $1){
+                    var attrArr = $1.split('.');
+                    var data = vm.data;
+
+                    for(var i = 0;i < attrArr.length; i++){
+                        data = data[ attrArr[i] ];
+                    }
+
+                    return data;
+                })
+                item.nodeValue = text;
+            }
+            console.log(item, 2222);
+            frag.appendChild(item);
+        }
+        this.node.innerHTML = '';
+        this.node.appendChild(frag);
+    }
+
+    Render.prototype.transformDOM = function(dom){
+        var frag = document.createDocumentFragment();
+
+    }
 
     // 事件模型
     function Event(){
@@ -54,6 +106,9 @@
         this.data = data.data;
         this.walk( this.data );
         this.eventObj = new Event();
+        this.render = new Render(this.$el);
+        console.log(this.render)
+        this.render.cloneDOM();
     }
 
     var pt = Vue.prototype;
@@ -98,9 +153,6 @@
             },
             set(newVal, oldVal){
 
-                /* 更新DOM事件在这里 */
-
-
                 // 触发自己的事件，并冒泡到顶层
                 _this.eventObj.emit(path, newVal, oldVal);
 
@@ -111,6 +163,9 @@
                     }
                     val = newVal;
                 }
+
+                // 等数据更新后渲染DOM
+                _this.render.renderData(_this);
             }
         })
     }
@@ -129,13 +184,13 @@
         }
     });
 
-    app.$watch('user.name', function(v){
-        console.log('我变成' + v + '啦');
-    })
-
-    app.$watch('user.age', function(v){
-        console.log('我变成' + v + '啦');
-    })
+//    app.$watch('user.name', function(v){
+//        console.log('我变成' + v + '啦');
+//    })
+//
+//    app.$watch('user.age', function(v){
+//        console.log('我变成' + v + '啦');
+//    })
 
 </script>
 </body>

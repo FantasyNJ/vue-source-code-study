@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    var arrText=["1","2","3","4","5","6","7","8","9","10"];
+    var oFrag=document.createDocumentFragment();
+
+    for(var i=0;i<arrText.length;i++){
+        var op=document.createElement("P");
+        var oText=document.createTextNode(arrText[i]);
+        op.appendChild(oText);
+        oFrag.appendChild(op);
+    }
+    console.log(oFrag);
+    document.body.appendChild(oFrag);
+
+</script>
+</body>
+</html>
