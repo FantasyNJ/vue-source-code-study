@@ -17,7 +17,6 @@
     function Render(node){
         this.node = node;
         this.reg = /{{(.*)}}/g;
-
     }
 
     Render.prototype.cloneDOM = function(){
@@ -26,23 +25,33 @@
 
     Render.prototype.renderData = function(vm){
         var cloneTemplate = this.template.cloneNode(true);
-        var childrens = cloneTemplate.childNodes;
+
+
+        var replaceTemplate = this.replaceData(vm, cloneTemplate);
+
+        console.log(replaceTemplate)
+
+        this.node.innerHTML = '';
+        this.node.appendChild(replaceTemplate);
+
+    }
+
+    Render.prototype.replaceData = function(vm, template){
+        var childrens = template.childNodes;
         var frag = document.createDocumentFragment();
-        console.log(childrens.length)
 
         var i = 0;
         while( childrens.length > 0 ){
-            console.log(childrens, childrens.length)
             var item = childrens[i];
 
             if( item.nodeType === 1 ){  // elem DOM
 
-                console.log(item)
+                item = this.replaceData(vm, item);
 
             }else if( item.nodeType === 3 ){  // text DOM
                 var text = item.nodeValue;
                 text = text.replace(/{{(.*)}}/g, function($0, $1){
-                    var attrArr = $1.split('.');
+                    var attrArr = $1.trim().split('.');
                     var data = vm.data;
 
                     for(var i = 0;i < attrArr.length; i++){
@@ -53,11 +62,11 @@
                 })
                 item.nodeValue = text;
             }
-            console.log(item, 2222);
             frag.appendChild(item);
         }
-        this.node.innerHTML = '';
-        this.node.appendChild(frag);
+        template.innerHTML = '';
+        template.appendChild(frag);
+        return template;
     }
 
     Render.prototype.transformDOM = function(dom){
@@ -109,6 +118,7 @@
         this.render = new Render(this.$el);
         console.log(this.render)
         this.render.cloneDOM();
+        this.render.renderData(this);
     }
 
     var pt = Vue.prototype;
