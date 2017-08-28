@@ -10,6 +10,11 @@
     {{user.name}}
     <p>姓名：{{ user.name }}</p>
     <p>年龄：{{ user.age }}</p>
+    <ul>
+        <li>
+            性别：<span>{{ user.info.sex }}</span>
+        </li>
+    </ul>
 </div>
 
 <script>
@@ -25,11 +30,7 @@
 
     Render.prototype.renderData = function(vm){
         var cloneTemplate = this.template.cloneNode(true);
-
-
         var replaceTemplate = this.replaceData(vm, cloneTemplate);
-
-        console.log(replaceTemplate)
 
         this.node.innerHTML = '';
         this.node.appendChild(replaceTemplate);
@@ -190,17 +191,20 @@
             user: {
                 name: 'xiaoming',
                 age: 12,
+                info: {
+                    sex: '男'
+                }
             }
         }
     });
 
-//    app.$watch('user.name', function(v){
-//        console.log('我变成' + v + '啦');
-//    })
-//
-//    app.$watch('user.age', function(v){
-//        console.log('我变成' + v + '啦');
-//    })
+    //    app.$watch('user.name', function(v){
+    //        console.log('我变成' + v + '啦');
+    //    })
+    //
+    //    app.$watch('user.age', function(v){
+    //        console.log('我变成' + v + '啦');
+    //    })
 
 </script>
 </body>
