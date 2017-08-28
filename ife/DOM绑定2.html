@@ -8,72 +8,17 @@
 
 <div id="app">
     {{user.name}}
-    <p>姓名：{{ user.name }}</p>
+    <p data-id="1">姓名：{{ user.name }}</p>
     <p>年龄：{{ user.age }}</p>
     <ul>
         <li>
             性别：<span>{{ user.info.sex }}</span>
         </li>
     </ul>
+    <input type="text">
 </div>
 
 <script>
-
-    function Render(node){
-        this.node = node;
-        this.reg = /{{(.*)}}/g;
-    }
-
-    Render.prototype.cloneDOM = function(){
-        this.template = this.node.cloneNode(true);
-    }
-
-    Render.prototype.renderData = function(vm){
-        var cloneTemplate = this.template.cloneNode(true);
-        var replaceTemplate = this.replaceData(vm, cloneTemplate);
-
-        this.node.innerHTML = '';
-        this.node.appendChild(replaceTemplate);
-
-    }
-
-    Render.prototype.replaceData = function(vm, template){
-        var childrens = template.childNodes;
-        var frag = document.createDocumentFragment();
-
-        var i = 0;
-        while( childrens.length > 0 ){
-            var item = childrens[i];
-
-            if( item.nodeType === 1 ){  // elem DOM
-
-                item = this.replaceData(vm, item);
-
-            }else if( item.nodeType === 3 ){  // text DOM
-                var text = item.nodeValue;
-                text = text.replace(/{{(.*)}}/g, function($0, $1){
-                    var attrArr = $1.trim().split('.');
-                    var data = vm.data;
-
-                    for(var i = 0;i < attrArr.length; i++){
-                        data = data[ attrArr[i] ];
-                    }
-
-                    return data;
-                })
-                item.nodeValue = text;
-            }
-            frag.appendChild(item);
-        }
-        template.innerHTML = '';
-        template.appendChild(frag);
-        return template;
-    }
-
-    Render.prototype.transformDOM = function(dom){
-        var frag = document.createDocumentFragment();
-
-    }
 
     // 事件模型
     function Event(){
@@ -116,10 +61,8 @@
         this.data = data.data;
         this.walk( this.data );
         this.eventObj = new Event();
-        this.render = new Render(this.$el);
-        console.log(this.render)
-        this.render.cloneDOM();
-        this.render.renderData(this);
+        this.cloneDOM();
+        this.renderData(this);
     }
 
     var pt = Vue.prototype;
@@ -176,13 +119,64 @@
                 }
 
                 // 等数据更新后渲染DOM
-                _this.render.renderData(_this);
+                _this.renderData(_this);
             }
         })
     }
 
     pt.$watch = function(key, cb){
         this.eventObj.on(key, cb);
+    }
+
+    // render
+    pt.cloneDOM = function(){
+        this.template = this.$el.cloneNode(true);
+    }
+
+    pt.renderData = function(vm){
+        var cloneTemplate = this.template.cloneNode(true);
+        var replaceTemplate = this.replaceData(vm, cloneTemplate);
+
+        this.$el.parentNode.replaceChild(replaceTemplate, this.$el)
+        this.findElement( this.el );
+    }
+
+    pt.replaceData = function(vm, template){
+        var childrens = template.childNodes;
+        var frag = document.createDocumentFragment();
+
+        var i = 0;
+        while( childrens.length > 0 ){
+            var item = childrens[i];
+
+            if( item.nodeType === 1 ){  // elem DOM
+
+                item = this.replaceData(vm, item);
+
+            }else if( item.nodeType === 3 ){  // text DOM
+                var text = item.nodeValue;
+                text = text.replace(/{{(.*)}}/g, function($0, $1){
+                    var attrArr = $1.trim().split('.');
+                    var data = vm.data;
+
+                    for(var i = 0;i < attrArr.length; i++){
+                        data = data[ attrArr[i] ];
+                    }
+
+                    return data;
+                })
+                item.nodeValue = text;
+            }
+            frag.appendChild(item);
+        }
+        template.innerHTML = '';
+        template.appendChild(frag);
+        return template;
+    }
+
+    pt.transformDOM = function(dom){
+        var frag = document.createDocumentFragment();
+
     }
 
     let app = new Vue({
@@ -197,6 +191,8 @@
             }
         }
     });
+
+
 
     //    app.$watch('user.name', function(v){
     //        console.log('我变成' + v + '啦');
