@@ -109,6 +109,7 @@
         this.render = new Render(this.$el);
         console.log(this.render)
         this.render.cloneDOM();
+        this.render.renderData(this);
     }
 
     var pt = Vue.prototype;
